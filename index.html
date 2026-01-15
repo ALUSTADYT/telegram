@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>All-in-One Info Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{margin:0;font-family:Poppins,Arial;background:#0f172a;color:#e5e7eb}
+header{background:#020617;padding:15px;text-align:center;font-size:22px;font-weight:600}
+.container{max-width:900px;margin:auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
+.card{background:#020617;border-radius:14px;padding:18px;box-shadow:0 10px 25px rgba(0,0,0,.4)}
+.card h3{margin-top:0}
+input,button{width:100%;padding:12px;border-radius:10px;border:none;margin-top:10px;font-size:15px}
+input{background:#020617;color:#fff;border:1px solid #1e293b}
+button{background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+button:hover{background:#1d4ed8}
+pre{white-space:pre-wrap;word-break:break-word;background:#020617;padding:10px;border-radius:8px;margin-top:10px}
+a{color:#38bdf8;text-decoration:none}
+footer{text-align:center;font-size:13px;opacity:.7;padding:20px}
+</style>
+</head>
+<body>
+<header>✨ Multi Utility Website</header>
+<div class="container">
+<div class="grid"><div class="card">
+<h3>📊 SIM / CNIC Info</h3>
+<input id="number" placeholder="03XXXXXXXXX or 13 digit CNIC">
+<button onclick="fetchInfo()">Fetch Info</button>
+<pre id="result"></pre>
+</div><div class="card">
+<h3>🎬 TikTok Downloader</h3>
+<input id="tiktok" placeholder="Paste TikTok URL">
+<button onclick="downloadTikTok()">Get Download Link</button>
+<pre id="tt"></pre>
+</div><div class="card">
+<h3>📧 Temp Mail</h3>
+<button onclick="createMail()">Generate New Email</button>
+<button onclick="checkInbox()">Check Inbox</button>
+<pre id="mail"></pre>
+</div></div>
+</div>
+<footer>Powered by Web APIs</footer><script>
+const SIM_API = "https://fam-official.serv00.net/api/database.php?number=";
+const TEMP_BASE = "https://temp-mail-fak.jokerkeep057.workers.dev/?key=32563";
+let tempSession = null;
+
+function clean(text){
+  return String(text).replace(/famofc|credit/ig,'').trim();
+}
+
+function fetchInfo(){
+  const num = document.getElementById('number').value.trim();
+  document.getElementById('result').innerText = 'Fetching...';
+  fetch(SIM_API + num)
+    .then(r=>r.json())
+    .then(d=>{
+      let out='';
+      for(let k in d){
+        const key = clean(k);
+        const val = clean(d[k]);
+        if(key && val) out += key + ': ' + val + '\n';
+      }
+      document.getElementById('result').innerText = out || 'No data';
+    })
+    .catch(()=>document.getElementById('result').innerText='Error');
+}
+
+function downloadTikTok(){
+  const url=document.getElementById('tiktok').value.trim();
+  document.getElementById('tt').innerText='Fetching...';
+  fetch(`https://mrking-tiktok-download-api.deno.dev/?url=${encodeURIComponent(url)}`)
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.video){
+        document.getElementById('tt').innerHTML=`<a href="${d.video}" target="_blank">⬇ Download Video</a>`;
+      }else{
+        document.getElementById('tt').innerText='Failed';
+      }
+    })
+    .catch(()=>document.getElementById('tt').innerText='Error');
+}
+
+function createMail(){
+  document.getElementById('mail').innerText='Generating...';
+  fetch(TEMP_BASE+'&action=generate')
+    .then(r=>r.json())
+    .then(d=>{
+      tempSession = d.sessionId;
+      document.getElementById('mail').innerText = 'Email: ' + d.emailAddress;
+    })
+    .catch(()=>document.getElementById('mail').innerText='Error');
+}
+
+function checkInbox(){
+  if(!tempSession){
+    document.getElementById('mail').innerText='Generate email first';
+    return;
+  }
+  document.getElementById('mail').innerText='Checking inbox...';
+  fetch(TEMP_BASE+`&action=inbox&session=${tempSession}`)
+    .then(r=>r.json())
+    .then(d=>{
+      let out='';
+      (d.inbox||[]).forEach(m=>{
+        out += 'From: '+m.from+'\nSubject: '+m.subject+'\n\n';
+      });
+      document.getElementById('mail').innerText = out || 'Inbox empty';
+    })
+    .catch(()=>document.getElementById('mail').innerText='Error');
+}
+</script></body>
+</html>
