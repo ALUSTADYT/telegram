@@ -2,20 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SIM Database By E3 HACKER</title>
+<title>SIM Database Lookup</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
-}
-
+*{box-sizing:border-box;font-family:Poppins,sans-serif}
 body{
     min-height:100vh;
     display:flex;
@@ -24,8 +17,6 @@ body{
     background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color:#fff;
 }
-
-/* 3D Glass Card */
 .card{
     width:100%;
     max-width:420px;
@@ -33,49 +24,23 @@ body{
     border-radius:22px;
     background:rgba(255,255,255,0.12);
     backdrop-filter:blur(15px);
-    box-shadow:
-        0 25px 45px rgba(0,0,0,0.45),
-        inset 0 1px 1px rgba(255,255,255,0.25);
-    transition:0.4s;
+    box-shadow:0 25px 45px rgba(0,0,0,0.45);
 }
-
-.card:hover{
-    transform:translateY(-6px) rotateX(3deg);
-}
-
-h1{
-    text-align:center;
-    font-size:24px;
-    margin-bottom:15px;
-    font-weight:600;
-}
-
-/* Views */
-.views{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:15px;
-}
-
+h1{text-align:center;margin-bottom:15px}
+.views{display:flex;justify-content:space-between;margin-bottom:15px}
 .viewBox{
     background:rgba(0,0,0,0.35);
     padding:8px 12px;
     border-radius:10px;
     font-size:13px;
 }
-
-/* Input */
 input{
     width:100%;
     padding:14px;
     border-radius:12px;
     border:none;
-    outline:none;
-    font-size:15px;
     margin-bottom:15px;
 }
-
-/* Button */
 button{
     width:100%;
     padding:14px;
@@ -84,17 +49,9 @@ button{
     font-size:16px;
     font-weight:600;
     color:#fff;
-    cursor:pointer;
     background:linear-gradient(135deg,#ff512f,#dd2476);
-    box-shadow:0 10px 22px rgba(0,0,0,0.3);
-    transition:0.3s;
+    cursor:pointer;
 }
-
-button:hover{
-    transform:scale(1.05);
-}
-
-/* Result */
 .result{
     margin-top:20px;
     background:rgba(0,0,0,0.35);
@@ -104,29 +61,8 @@ button:hover{
     overflow:auto;
     font-size:14px;
 }
-
-.result p{
-    margin:6px 0;
-}
-
-.error{
-    color:#ffb3b3;
-    text-align:center;
-}
-
-.loading{
-    text-align:center;
-    opacity:0.8;
-}
-
-/* Scrollbar */
-.result::-webkit-scrollbar{
-    width:6px;
-}
-.result::-webkit-scrollbar-thumb{
-    background:#ff4b2b;
-    border-radius:10px;
-}
+.error{color:#ffb3b3;text-align:center}
+.loading{text-align:center}
 </style>
 </head>
 
@@ -135,7 +71,6 @@ button:hover{
 <div class="card">
     <h1>📱 SIM Database Lookup</h1>
 
-    <!-- Views -->
     <div class="views">
         <div class="viewBox">👁 Live: <span id="liveViews">--</span></div>
         <div class="viewBox">📊 Total: <span id="totalViews">--</span></div>
@@ -148,63 +83,48 @@ button:hover{
 </div>
 
 <script>
-/* =========================
-   TOTAL VIEWS (REAL COUNTER)
-   ========================= */
-const NAMESPACE = "sim-database-app";
-const KEY = "visits";
+/* TOTAL VIEWS */
+fetch("https://api.countapi.xyz/hit/sim-database-app/visits")
+.then(r=>r.json())
+.then(d=>totalViews.innerText=d.value);
 
-fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`)
-.then(res => res.json())
-.then(data => {
-    document.getElementById("totalViews").innerText = data.value;
-});
-
-/* =========================
-   LIVE VIEWS (DYNAMIC)
-   ========================= */
-function updateLiveViews(){
-    let live = Math.floor(Math.random() * 5) + 1;
-    document.getElementById("liveViews").innerText = live;
+/* LIVE VIEWS */
+function live(){
+    liveViews.innerText=Math.floor(Math.random()*5)+1;
 }
-updateLiveViews();
-setInterval(updateLiveViews, 5000);
+live(); setInterval(live,5000);
 
-/* =========================
-   SIM DATABASE API
-   ========================= */
+/* SIM API FIXED */
 async function getSIMData(){
-    const number = document.getElementById("number").value.trim();
-    const output = document.getElementById("output");
+    const number=document.getElementById("number").value.trim();
+    const out=document.getElementById("output");
 
-    if(number === ""){
-        output.innerHTML = "<p class='error'>Please enter a number.</p>";
+    if(!number){
+        out.innerHTML="<p class='error'>Enter a number</p>";
         return;
     }
 
-    output.innerHTML = "<p class='loading'>🔍 Fetching data...</p>";
+    out.innerHTML="<p class='loading'>🔍 Loading...</p>";
 
     try{
-        const res = await fetch(
-            "https://fam-official.serv00.net/api/database.php?number=" + encodeURIComponent(number)
-        );
+        // CORS PROXY
+        const url = "https://api.allorigins.win/raw?url=" +
+            encodeURIComponent(
+              "https://fam-official.serv00.net/api/database.php?number=" + number
+            );
 
-        const data = await res.json();
+        const res = await fetch(url);
+        const text = await res.text();
 
-        if(!data || Object.keys(data).length === 0){
-            output.innerHTML = "<p class='error'>No data found.</p>";
+        if(!text){
+            out.innerHTML="<p class='error'>No data found</p>";
             return;
         }
 
-        let html = "";
-        for(const key in data){
-            html += `<p><strong>${key}:</strong> ${data[key]}</p>`;
-        }
+        out.innerHTML = "<pre>"+text+"</pre>";
 
-        output.innerHTML = html;
-
-    }catch(e){
-        output.innerHTML = "<p class='error'>API Error or Network Issue</p>";
+    }catch(err){
+        out.innerHTML="<p class='error'>API blocked or offline</p>";
     }
 }
 </script>
