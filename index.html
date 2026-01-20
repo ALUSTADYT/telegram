@@ -1,97 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Instagram Downloader</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-family:Arial, sans-serif;
-    background:linear-gradient(135deg,#141e30,#243b55);
-    color:#fff;
-}
-.card{
-    width:100%;
-    max-width:420px;
-    background:rgba(255,255,255,0.08);
-    padding:20px;
-    border-radius:15px;
-    box-shadow:0 20px 40px rgba(0,0,0,.4);
-}
-h2{text-align:center;margin-bottom:15px;}
-input{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:none;
-    outline:none;
-}
-button{
-    width:100%;
-    margin-top:12px;
-    padding:12px;
-    background:#00e5ff;
-    border:none;
-    border-radius:10px;
-    font-weight:bold;
-    cursor:pointer;
-}
-#result{margin-top:15px;text-align:center;}
-a{
-    display:inline-block;
-    margin-top:10px;
-    padding:10px 16px;
-    background:#00c853;
-    color:#fff;
-    text-decoration:none;
-    border-radius:8px;
-}
-.error{color:#ff5252;}
-</style>
+    <meta charset="UTF-8">
+    <title>Instagram Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            width: 300px;
+        }
+        .result img, .result video {
+            max-width: 90%;
+            margin-top: 20px;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="card">
     <h2>Instagram Downloader</h2>
-    <input type="text" id="url" placeholder="Paste Instagram Reel / Post URL">
-    <button onclick="download()">Download</button>
-    <div id="result"></div>
-</div>
+
+    <input type="text" id="instaUrl" placeholder="Paste Instagram Post URL">
+    <button onclick="downloadInstagram()">Download</button>
+
+    <div class="result" id="result"></div>
 
 <script>
-function download(){
-    let url = document.getElementById("url").value;
-    let result = document.getElementById("result");
+async function downloadInstagram() {
+    const urlInput = document.getElementById("instaUrl").value.trim();
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = "Loading... ⏳";
 
-    if(!url){
-        result.innerHTML = "<div class='error'>Enter URL</div>";
+    if (!urlInput) {
+        alert("Please enter a valid Instagram URL!");
+        resultDiv.innerHTML = "";
         return;
     }
 
-    result.innerHTML = "⏳ Processing...";
+    try {
+        const apiUrl = `https://igram.io/api/convert?url=${encodeURIComponent(urlInput)}`;
 
-    fetch("api.php?url="+encodeURIComponent(url))
-    .then(res => res.json())
-    .then(data => {
-        if(data.url){
-            result.innerHTML = `
-            <video src="${data.url}" controls style="width:100%;border-radius:10px;"></video>
-            <a href="${data.url}" download>Download Video</a>
-            `;
-        }else{
-            result.innerHTML = "<div class='error'>Video not found</div>";
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        resultDiv.innerHTML = ""; // clear
+
+        if (data.status === "success" && data.media) {
+
+            data.media.forEach(item => {
+                if (item.type === "image") {
+                    const img = document.createElement("img");
+                    img.src = item.src;
+                    resultDiv.appendChild(img);
+                } else if (item.type === "video") {
+                    const video = document.createElement("video");
+                    video.src = item.src;
+                    video.controls = true;
+                    resultDiv.appendChild(video);
+                }
+            });
+
+        } else {
+            resultDiv.innerHTML = "Unable to process this URL 😕";
         }
-    })
-    .catch(()=>{
-        result.innerHTML = "<div class='error'>Network Error</div>";
-    });
+    } catch (err) {
+        console.error(err);
+        resultDiv.innerHTML = "Error occurred. Try again!";
+    }
 }
 </script>
 
